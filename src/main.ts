@@ -1112,7 +1112,7 @@ function generateBatchingRpcMethod(typeMap: TypeMap, batchMethod: BatchMethod): 
     .addParameter(singular(inputFieldName), inputType)
     .addCode('const dl = ctx.getDataLoader(%S, () => {%>\n', uniqueIdentifier)
     .addCode(
-      'return new %T<%T, %T>(%L, { cacheKeyFn: %T });\n',
+      'return new %T<%T, %T>(%L, { cacheKeyFn: %T, ...ctx.rpcDataLoaderOptions });\n',
       dataloader,
       inputType,
       outputType,
@@ -1153,7 +1153,7 @@ function generateCachingRpcMethod(
     .addParameter('request', requestType(typeMap, methodDesc))
     .addCode('const dl = ctx.getDataLoader(%S, () => {%>\n', uniqueIdentifier)
     .addCode(
-      'return new %T<%T, %T>(%L, { cacheKeyFn: %T });\n',
+      'return new %T<%T, %T>(%L, { cacheKeyFn: %T, ...ctx.rpcDataLoaderOptions });\n',
       dataloader,
       inputType,
       outputType,
