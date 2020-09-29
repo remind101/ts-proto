@@ -1204,13 +1204,13 @@ function generateDataLoadersType(options: Options): InterfaceSpec {
   return InterfaceSpec.create('DataLoaders')
     .addModifiers(Modifier.EXPORT)
     .addFunction(fn)
-    .addProperty('rpcDataLoaderOptions', 'DataLoaderOptions', {})
+    .addProperty('rpcDataLoaderOptions', 'DataLoaderOptions', {});
 }
 
 function generateDataLoaderOptionsType(): InterfaceSpec {
   return InterfaceSpec.create('DataLoaderOptions')
     .addModifiers(Modifier.EXPORT)
-    .addProperty('cache', 'boolean', { optional: true })
+    .addProperty('cache', 'boolean', { optional: true });
 }
 
 function requestType(typeMap: TypeMap, methodDesc: MethodDescriptorProto): TypeName {
