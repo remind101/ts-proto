@@ -75,6 +75,7 @@ function generateFile(typeMap, fileDesc, parameter) {
     if (options.outputClientImpl && fileDesc.service.length > 0) {
         file = file.addInterface(generateRpcType(options));
         if (options.useContext) {
+            file = file.addInterface(generateDataLoaderOptionsType());
             file = file.addInterface(generateDataLoadersType(options));
         }
     }
@@ -870,7 +871,13 @@ function generateDataLoadersType(options) {
         .returns(ts_poet_1.TypeNames.typeVariable('T'));
     return ts_poet_1.InterfaceSpec.create('DataLoaders')
         .addModifiers(ts_poet_1.Modifier.EXPORT)
-        .addFunction(fn);
+        .addFunction(fn)
+        .addProperty('rpcDataLoaderOptions', 'DataLoaderOptions', {});
+}
+function generateDataLoaderOptionsType() {
+    return ts_poet_1.InterfaceSpec.create('DataLoaderOptions')
+        .addModifiers(ts_poet_1.Modifier.EXPORT)
+        .addProperty('cache', 'boolean', { optional: true });
 }
 function requestType(typeMap, methodDesc) {
     return types_1.messageToTypeName(typeMap, methodDesc.inputType);
