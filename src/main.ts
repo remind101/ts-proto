@@ -140,6 +140,7 @@ export function generateFile(typeMap: TypeMap, fileDesc: FileDescriptorProto, pa
   if (options.outputClientImpl && fileDesc.service.length > 0) {
     file = file.addInterface(generateRpcType(options));
     if (options.useContext) {
+      file = file.addInterface(generateDataLoaderOptionsType());
       file = file.addInterface(generateDataLoadersType(options));
     }
   }
@@ -1112,7 +1113,7 @@ function generateBatchingRpcMethod(typeMap: TypeMap, batchMethod: BatchMethod): 
     .addParameter(singular(inputFieldName), inputType)
     .addCode('const dl = ctx.getDataLoader(%S, () => {%>\n', uniqueIdentifier)
     .addCode(
-      'return new %T<%T, %T>(%L, { cacheKeyFn: %T });\n',
+      'return new %T<%T, %T>(%L, { cacheKeyFn: %T, ...ctx.rpcDataLoaderOptions });\n',
       dataloader,
       inputType,
       outputType,
@@ -1153,7 +1154,7 @@ function generateCachingRpcMethod(
     .addParameter('request', requestType(typeMap, methodDesc))
     .addCode('const dl = ctx.getDataLoader(%S, () => {%>\n', uniqueIdentifier)
     .addCode(
-      'return new %T<%T, %T>(%L, { cacheKeyFn: %T });\n',
+      'return new %T<%T, %T>(%L, { cacheKeyFn: %T, ...ctx.rpcDataLoaderOptions });\n',
       dataloader,
       inputType,
       outputType,
@@ -1202,7 +1203,14 @@ function generateDataLoadersType(options: Options): InterfaceSpec {
     .returns(TypeNames.typeVariable('T'));
   return InterfaceSpec.create('DataLoaders')
     .addModifiers(Modifier.EXPORT)
-    .addFunction(fn);
+    .addFunction(fn)
+    .addProperty('rpcDataLoaderOptions', 'DataLoaderOptions', {});
+}
+
+function generateDataLoaderOptionsType(): InterfaceSpec {
+  return InterfaceSpec.create('DataLoaderOptions')
+    .addModifiers(Modifier.EXPORT)
+    .addProperty('cache', 'boolean', { optional: true });
 }
 
 function requestType(typeMap: TypeMap, methodDesc: MethodDescriptorProto): TypeName {
